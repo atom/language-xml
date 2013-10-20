@@ -1,0 +1,6 @@
+{
+  "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+  "name": "XML Processing Instruction",
+  "scope": "text.xml",
+  "tabTrigger": "xml"
+}

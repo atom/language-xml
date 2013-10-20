@@ -1,0 +1,9 @@
+{
+  "beforeRunningCommand": "nop",
+  "command": "#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby\nrequire 'rexml/document'\n\ndef serialize(source, dest)\n  if source.is_a? REXML::Text\n    dest.add_text(source.dup)\n    return dest\n  end\n\n  d2 = dest.add_element('xsl:element', 'name' => source.expanded_name)\n  source.attributes.each { |(k,v)| d2.add_element('xsl:attribute', 'name' => k).text = v }\n  source.children.each { |node| serialize(node, d2)}\n  dest\nend\n\nsource = REXML::Document.new(STDIN.read)\ndest   = REXML::Document.new\n\nprint serialize(source.elements[1], dest).to_s",
+  "fallbackInput": "document",
+  "input": "selection",
+  "name": "Create XSL Generator for Selection",
+  "output": "replaceSelectedText",
+  "scope": "text.xml"
+}

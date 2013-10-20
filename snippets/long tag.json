@@ -1,0 +1,6 @@
+{
+  "content": "<${1:name}>$0</${1/([^ ]+).*/$1/}>",
+  "name": "Long Tag",
+  "scope": "text.xml",
+  "tabTrigger": "<"
+}

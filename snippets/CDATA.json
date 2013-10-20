@@ -1,0 +1,6 @@
+{
+  "content": "<![CDATA[$0]]>",
+  "name": "CDATA",
+  "scope": "text.xml",
+  "tabTrigger": "cdata"
+}
