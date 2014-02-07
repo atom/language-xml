@@ -1,9 +1,0 @@
-{
-  "beforeRunningCommand": "nop",
-  "command": "if [[ \"$TM_SOFT_TABS\" = \"YES\" ]];\n\tthen export XMLLINT_INDENT=`ruby -e\"print(' ' * ${TM_TAB_SIZE})\"`\n\telse export XMLLINT_INDENT=$'\\t'\nfi\nresult=`xmllint --format - 2>&1`\nif [[ $? > 0 ]];\n\tthen exit_show_tool_tip \"Errors: $result\"\n\telse echo \"$result\"\nfi",
-  "input": "selection",
-  "keyEquivalent": "^H",
-  "name": "Tidy",
-  "output": "replaceSelectedText",
-  "scope": "text.xml"
-}

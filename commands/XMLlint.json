@@ -1,9 +1,0 @@
-{
-  "beforeRunningCommand": "nop",
-  "command": "xmllint --htmlout --valid - 2>&1|perl -pe 's|^((?:</?[^>]+>)*)(.*?):(\\d+):(.*error.*)|$1<a href=\"txmt://open?line=$3\">$4</a>|'",
-  "input": "document",
-  "keyEquivalent": "^V",
-  "name": "Validate Syntax",
-  "output": "showAsHTML",
-  "scope": "text.xml"
-}
