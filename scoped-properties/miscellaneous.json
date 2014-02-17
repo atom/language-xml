@@ -1,0 +1,8 @@
+{
+  "text.xml": {
+    "editor": {
+      "increaseIndentPattern": "^\\s*<(([^!/?]|%)(?!.+?([/%]>|</.+?>))|[%!]--\\s*$)",
+      "decreaseIndentPattern": "^\\s*(</[^>]+>|-->|--%>)"
+    }
+  }
+}

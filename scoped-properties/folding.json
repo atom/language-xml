@@ -1,0 +1,7 @@
+{
+  "text.xml": {
+    "editor": {
+      "foldEndPattern": "^\\s*(</[^>]+>|[/%]>|-->)\\s*$"
+    }
+  }
+}
