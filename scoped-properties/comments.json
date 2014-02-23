@@ -1,8 +1,0 @@
-{
-  ".text.xml": {
-    "editor": {
-      "commentStart": "<!-- ",
-      "commentEnd": " -->"
-    }
-  }
-}

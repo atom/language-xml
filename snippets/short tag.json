@@ -1,6 +1,0 @@
-{
-  "content": "<${1:name} />",
-  "name": "Short Tag",
-  "scope": "text.xml",
-  "tabTrigger": ">"
-}

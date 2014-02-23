@@ -1,6 +1,0 @@
-{
-  "content": "<${1:name} ${2:attr=\"value\"}>$0\n</${1:name}>",
-  "name": "Long Attribute Tag",
-  "scope": "text.xml",
-  "tabTrigger": "<a"
-}
