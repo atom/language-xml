@@ -9,6 +9,7 @@
   'rss'
   'opml'
   'svg'
+  'storyboard'
 ]
 'name': 'XML'
 'patterns': [
