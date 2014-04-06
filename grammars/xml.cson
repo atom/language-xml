@@ -10,6 +10,7 @@
   'opml'
   'svg'
   'storyboard'
+  'wsdl'
 ]
 'name': 'XML'
 'patterns': [
