@@ -12,6 +12,7 @@
   'xib'
   'storyboard'
   'wsdl'
+  'rdf'
 ]
 'name': 'XML'
 'patterns': [
