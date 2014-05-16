@@ -13,6 +13,7 @@
   'storyboard'
   'wsdl'
   'rdf'
+  'isml'
 ]
 'name': 'XML'
 'patterns': [
