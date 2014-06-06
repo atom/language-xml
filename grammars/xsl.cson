@@ -1,8 +1,9 @@
+'scopeName': 'text.xml.xsl'
+'name': 'XSL'
 'fileTypes': [
   'xsl'
   'xslt'
 ]
-'name': 'XSL'
 'patterns': [
   {
     'begin': '(<)(xsl)((:))(template)'
@@ -65,4 +66,3 @@
       '0':
         'name': 'punctuation.definition.string.end.xml'
     'name': 'string.quoted.single.xml'
-'scopeName': 'text.xml.xsl'
