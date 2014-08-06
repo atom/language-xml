@@ -23,6 +23,7 @@
   'proj'
   'csproj'
   'vbproj'
+  'config'
 ]
 'patterns': [
   {
