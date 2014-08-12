@@ -23,6 +23,11 @@
   'proj'
   'csproj'
   'vbproj'
+  'config'
+  'pubxml'
+  'pubxml.user'
+  'vbproj.user'
+  'csproj.user'
 ]
 'patterns': [
   {
