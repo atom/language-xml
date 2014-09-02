@@ -3,6 +3,7 @@
 'fileTypes': [
   'config'
   'cpt'
+  'csl'
   'csproj'
   'csproj.user'
   'dtml'
