@@ -1,6 +1,7 @@
 'scopeName': 'text.xml'
 'name': 'XML'
 'fileTypes': [
+  'bpmn'
   'config'
   'cpt'
   'csl'
@@ -29,6 +30,7 @@
   'xlf'
   'xliff'
   'xml'
+  'xpdl'
   'xsd'
 ]
 'patterns': [
