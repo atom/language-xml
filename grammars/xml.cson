@@ -24,6 +24,8 @@
   'tld'
   'vbproj'
   'vbproj.user'
+  'vcxproj'
+  'vcxproj.filters'
   'wsdl'
   'xaml'
   'xib'
