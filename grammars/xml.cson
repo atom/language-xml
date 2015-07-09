@@ -43,6 +43,7 @@
   'xml'
   'xpdl'
   'xsd'
+  'xul'
 ]
 'patterns': [
   {
