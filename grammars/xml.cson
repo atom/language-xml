@@ -1,6 +1,7 @@
 'scopeName': 'text.xml'
 'name': 'XML'
 'fileTypes': [
+  'axml'
   'bpmn'
   'config'
   'cpt'
