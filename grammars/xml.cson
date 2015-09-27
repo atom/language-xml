@@ -88,12 +88,7 @@
     ]
   }
   {
-    'begin': '<[!%]--'
-    'captures':
-      '0':
-        'name': 'punctuation.definition.comment.xml'
-    'end': '--%?>'
-    'name': 'comment.block.xml'
+    'include': '#comments'
   }
   {
     'begin': '(<)((?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+))(?=(\\s[^>]*)?></\\2>)'
@@ -269,6 +264,9 @@
       {
         'include': '#parameterEntity'
       }
+      {
+        'include': '#comments'
+      }
     ]
   'parameterEntity':
     'captures':
@@ -317,3 +315,10 @@
         'include': '#singlequotedString'
       }
     ]
+  'comments':
+    'begin': '<[!%]--'
+    'captures':
+      '0':
+        'name': 'punctuation.definition.comment.xml'
+    'end': '--%?>'
+    'name': 'comment.block.xml'
