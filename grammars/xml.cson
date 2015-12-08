@@ -1,6 +1,7 @@
 'scopeName': 'text.xml'
 'name': 'XML'
 'fileTypes': [
+  'atom'
   'axml'
   'bpmn'
   'config'
