@@ -95,33 +95,31 @@
     'include': '#comments'
   }
   {
-    'begin': '(<)((?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+))(?=(\\s[^>]*)?></\\2>)'
+    'begin': '(<)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(?=(\\s[^>]*)?></\\2>)'
     'beginCaptures':
       '1':
         'name': 'punctuation.definition.tag.xml'
+      '2':
+        'name': 'entity.name.tag.xml'
       '3':
         'name': 'entity.name.tag.namespace.xml'
       '4':
-        'name': 'entity.name.tag.xml'
-      '5':
         'name': 'punctuation.separator.namespace.xml'
-      '6':
+      '5':
         'name': 'entity.name.tag.localname.xml'
-    'end': '(>(<))/(?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+)(>)'
+    'end': '(></)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(>)'
     'endCaptures':
       '1':
         'name': 'punctuation.definition.tag.xml'
       '2':
-        'name': 'meta.scope.between-tag-pair.xml'
+        'name': 'entity.name.tag.xml'
       '3':
         'name': 'entity.name.tag.namespace.xml'
       '4':
-        'name': 'entity.name.tag.xml'
-      '5':
         'name': 'punctuation.separator.namespace.xml'
-      '6':
+      '5':
         'name': 'entity.name.tag.localname.xml'
-      '7':
+      '6':
         'name': 'punctuation.definition.tag.xml'
     'name': 'meta.tag.no-content.xml'
     'patterns': [
