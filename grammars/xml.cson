@@ -107,19 +107,21 @@
         'name': 'punctuation.separator.namespace.xml'
       '5':
         'name': 'entity.name.tag.localname.xml'
-    'end': '(></)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(>)'
+    'end': '(>)(</)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(>)'
     'endCaptures':
       '1':
         'name': 'punctuation.definition.tag.xml'
       '2':
-        'name': 'entity.name.tag.xml'
+        'name': 'punctuation.definition.tag.xml'
       '3':
-        'name': 'entity.name.tag.namespace.xml'
+        'name': 'entity.name.tag.xml'
       '4':
-        'name': 'punctuation.separator.namespace.xml'
+        'name': 'entity.name.tag.namespace.xml'
       '5':
-        'name': 'entity.name.tag.localname.xml'
+        'name': 'punctuation.separator.namespace.xml'
       '6':
+        'name': 'entity.name.tag.localname.xml'
+      '7':
         'name': 'punctuation.definition.tag.xml'
     'name': 'meta.tag.no-content.xml'
     'patterns': [
