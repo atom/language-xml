@@ -38,6 +38,8 @@
   'tld'
   'vbproj'
   'vbproj.user'
+  'vcproj'
+  'vcproj.filters'
   'vcxproj'
   'vcxproj.filters'
   'wsdl'
