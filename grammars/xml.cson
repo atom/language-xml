@@ -27,6 +27,7 @@
   'nuspec'
   'opml'
   'owl'
+  'pom',
   'proj'
   'pt'
   'pubxml'
