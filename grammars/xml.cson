@@ -63,156 +63,236 @@
 ]
 'patterns': [
   {
-    'begin': '(<\\?)\\s*([-_a-zA-Z0-9]+)'
-    'captures':
-      '1':
-        'name': 'punctuation.definition.tag.xml'
-      '2':
-        'name': 'entity.name.tag.xml'
-    'end': '(\\?>)'
-    'name': 'meta.tag.preprocessor.xml'
-    'patterns': [
-      {
-        'match': ' ([a-zA-Z-]+)'
-        'name': 'entity.other.attribute-name.xml'
-      }
-      {
-        'include': '#doublequotedString'
-      }
-      {
-        'include': '#singlequotedString'
-      }
-    ]
-  }
-  {
-    'begin': '(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)'
-    'captures':
-      '1':
-        'name': 'punctuation.definition.tag.xml'
-      '2':
-        'name': 'keyword.other.doctype.xml'
-      '3':
-        'name': 'variable.language.documentroot.xml'
-    'end': '\\s*(>)'
-    'name': 'meta.tag.sgml.doctype.xml'
-    'patterns': [
-      {
-        'include': '#internalSubset'
-      }
-    ]
-  }
-  {
-    'include': '#comments'
-  }
-  {
-    'begin': '(<)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(?=(\\s[^>]*)?></\\2>)'
-    'beginCaptures':
-      '1':
-        'name': 'punctuation.definition.tag.xml'
-      '2':
-        'name': 'entity.name.tag.xml'
-      '3':
-        'name': 'entity.name.tag.namespace.xml'
-      '4':
-        'name': 'punctuation.separator.namespace.xml'
-      '5':
-        'name': 'entity.name.tag.localname.xml'
-    'end': '(>)(</)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(>)'
-    'endCaptures':
-      '1':
-        'name': 'punctuation.definition.tag.xml'
-      '2':
-        'name': 'punctuation.definition.tag.xml'
-      '3':
-        'name': 'entity.name.tag.xml'
-      '4':
-        'name': 'entity.name.tag.namespace.xml'
-      '5':
-        'name': 'punctuation.separator.namespace.xml'
-      '6':
-        'name': 'entity.name.tag.localname.xml'
-      '7':
-        'name': 'punctuation.definition.tag.xml'
-    'name': 'meta.tag.no-content.xml'
-    'patterns': [
-      {
-        'include': '#tagStuff'
-      }
-    ]
-  }
-  {
-    'begin': '(</?)(?:([-\\w\\.]+)((:)))?([-\\w\\.:]+)'
-    'captures':
-      '1':
-        'name': 'punctuation.definition.tag.xml'
-      '2':
-        'name': 'entity.name.tag.namespace.xml'
-      '3':
-        'name': 'entity.name.tag.xml'
-      '4':
-        'name': 'punctuation.separator.namespace.xml'
-      '5':
-        'name': 'entity.name.tag.localname.xml'
-    'end': '(/?>)'
-    'name': 'meta.tag.xml'
-    'patterns': [
-      {
-        'include': '#tagStuff'
-      }
-    ]
-  }
-  {
-    'include': '#entity'
-  }
-  {
-    'include': '#bare-ampersand'
-  }
-  {
-    'begin': '<%@'
+    'name': 'meta.svg.xml'
+    'begin': '(?i:<svg(?=[\\s:>])[^>]*>)'
     'beginCaptures':
       '0':
-        'name': 'punctuation.section.embedded.begin.xml'
-    'end': '%>'
+        'patterns': [
+          'include': '#generic-xml'
+        ]
+    'end': '(?i:</svg>)'
     'endCaptures':
       '0':
-        'name': 'punctuation.section.embedded.end.xml'
-    'name': 'source.java-props.embedded.xml'
+        'patterns': [
+          'include': '#generic-xml'
+        ]
     'patterns': [
       {
-        'match': 'page|include|taglib'
-        'name': 'keyword.other.page-props.xml'
+        'begin': """(?ix)
+          <script
+          (?=[>:\\s])
+          (?!
+            [^>]* \\s type
+            \\s* = \\s*
+            ['"]?
+            (?!
+              (?:text|application) /
+              (?:ecma|java)script
+            )
+            [^'"]+
+            ['"]?
+          )
+          [^>]*
+          >
+        """
+        'beginCaptures':
+          '0':
+            'patterns': [
+              'include': '#generic-xml'
+            ]
+        'contentName': 'source.js.embedded.xml'
+        'end': '(?ix:</script>)'
+        'endCaptures':
+          '0':
+            'patterns': [
+              'include': '#generic-xml'
+            ]
+        'patterns': [
+          {
+            # This stops "runaway" strings from swallowing closing tags:
+            # "JS string… </script></svg>"
+            'match': """(?x)
+              (
+                "(?:[^"\\\\]|\\\\.)* |
+                '(?:[^'\\\\]|\\\\.)*
+              )
+              (?=</script>)
+            """
+            'captures':
+              '1':
+                'patterns': [
+                  {
+                    'include': 'source.js'
+                  }
+                ]
+          }
+          {
+            'include': 'source.js'
+          }
+        ]
+      }
+      {
+        'include': '#generic-xml'
       }
     ]
   }
   {
-    'begin': '<%[!=]?(?!--)'
-    'beginCaptures':
-      '0':
-        'name': 'punctuation.section.embedded.begin.xml'
-    'end': '(?!--)%>'
-    'endCaptures':
-      '0':
-        'name': 'punctuation.section.embedded.end.xml'
-    'name': 'source.java.embedded.xml'
-    'patterns': [
-      {
-        'include': 'source.java'
-      }
-    ]
-  }
-  {
-    'begin': '<!\\[CDATA\\['
-    'beginCaptures':
-      '0':
-        'name': 'punctuation.definition.string.begin.xml'
-    'end': ']]>'
-    'endCaptures':
-      '0':
-        'name': 'punctuation.definition.string.end.xml'
-    'name': 'string.unquoted.cdata.xml'
+    'include': '#generic-xml'
   }
 ]
 'repository':
+  'generic-xml':
+    patterns: [
+      {
+        'begin': '(<\\?)\\s*([-_a-zA-Z0-9]+)'
+        'captures':
+          '1':
+            'name': 'punctuation.definition.tag.xml'
+          '2':
+            'name': 'entity.name.tag.xml'
+        'end': '(\\?>)'
+        'name': 'meta.tag.preprocessor.xml'
+        'patterns': [
+          {
+            'match': ' ([a-zA-Z-]+)'
+            'name': 'entity.other.attribute-name.xml'
+          }
+          {
+            'include': '#doublequotedString'
+          }
+          {
+            'include': '#singlequotedString'
+          }
+        ]
+      }
+      {
+        'begin': '(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)'
+        'captures':
+          '1':
+            'name': 'punctuation.definition.tag.xml'
+          '2':
+            'name': 'keyword.other.doctype.xml'
+          '3':
+            'name': 'variable.language.documentroot.xml'
+        'end': '\\s*(>)'
+        'name': 'meta.tag.sgml.doctype.xml'
+        'patterns': [
+          {
+            'include': '#internalSubset'
+          }
+        ]
+      }
+      {
+        'include': '#comments'
+      }
+      {
+        'begin': '(<)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(?=(\\s[^>]*)?></\\2>)'
+        'beginCaptures':
+          '1':
+            'name': 'punctuation.definition.tag.xml'
+          '2':
+            'name': 'entity.name.tag.xml'
+          '3':
+            'name': 'entity.name.tag.namespace.xml'
+          '4':
+            'name': 'punctuation.separator.namespace.xml'
+          '5':
+            'name': 'entity.name.tag.localname.xml'
+        'end': '(>)(</)((?:([-_a-zA-Z0-9]+)(:))?([-_a-zA-Z0-9:]+))(>)'
+        'endCaptures':
+          '1':
+            'name': 'punctuation.definition.tag.xml'
+          '2':
+            'name': 'punctuation.definition.tag.xml'
+          '3':
+            'name': 'entity.name.tag.xml'
+          '4':
+            'name': 'entity.name.tag.namespace.xml'
+          '5':
+            'name': 'punctuation.separator.namespace.xml'
+          '6':
+            'name': 'entity.name.tag.localname.xml'
+          '7':
+            'name': 'punctuation.definition.tag.xml'
+        'name': 'meta.tag.no-content.xml'
+        'patterns': [
+          {
+            'include': '#tagStuff'
+          }
+        ]
+      }
+      {
+        'begin': '(</?)(?:([-\\w\\.]+)((:)))?([-\\w\\.:]+)'
+        'captures':
+          '1':
+            'name': 'punctuation.definition.tag.xml'
+          '2':
+            'name': 'entity.name.tag.namespace.xml'
+          '3':
+            'name': 'entity.name.tag.xml'
+          '4':
+            'name': 'punctuation.separator.namespace.xml'
+          '5':
+            'name': 'entity.name.tag.localname.xml'
+        'end': '(/?>)'
+        'name': 'meta.tag.xml'
+        'patterns': [
+          {
+            'include': '#tagStuff'
+          }
+        ]
+      }
+      {
+        'include': '#entity'
+      }
+      {
+        'include': '#bare-ampersand'
+      }
+      {
+        'begin': '<%@'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.section.embedded.begin.xml'
+        'end': '%>'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.section.embedded.end.xml'
+        'name': 'source.java-props.embedded.xml'
+        'patterns': [
+          {
+            'match': 'page|include|taglib'
+            'name': 'keyword.other.page-props.xml'
+          }
+        ]
+      }
+      {
+        'begin': '<%[!=]?(?!--)'
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.section.embedded.begin.xml'
+        'end': '(?!--)%>'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.section.embedded.end.xml'
+        'name': 'source.java.embedded.xml'
+        'patterns': [
+          {
+            'include': 'source.java'
+          }
+        ]
+      }
+      {
+        'begin': '<!\\[CDATA\\['
+        'beginCaptures':
+          '0':
+            'name': 'punctuation.definition.string.begin.xml'
+        'end': ']]>'
+        'endCaptures':
+          '0':
+            'name': 'punctuation.definition.string.end.xml'
+        'name': 'string.unquoted.cdata.xml'
+      }
+    ]
   'EntityDecl':
     'begin': '(<!)(ENTITY)\\s+(%\\s+)?([:a-zA-Z_][:a-zA-Z0-9_.-]*)(\\s+(?:SYSTEM|PUBLIC)\\s+)?'
     'captures':
