@@ -349,33 +349,33 @@ describe "XML grammar", ->
         """
         expect(lines).toEqual expandScopes [
           [
-            {value: "<",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg", scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "<",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "not-svg",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [
-            {value: "  ",      scopes: "text.xml"}
-            {value: "<",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",   scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",       scopes: "text.xml meta.tag.xml"}
-            {value: "type",    scopes: "text.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",       scopes: "text.xml meta.tag.xml"}
-            {value: '"',       scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "text/css",scopes: "text.xml meta.tag.xml string.quoted.double.xml"}
-            {value: '"',       scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "  ",       scopes: "text.xml"}
+            {value: "<",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "style",    scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: " ",        scopes: "text.xml meta.tag.xml"}
+            {value: "type",     scopes: "text.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
+            {value: "=",        scopes: "text.xml meta.tag.xml"}
+            {value: '"',        scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
+            {value: "text/css", scopes: "text.xml meta.tag.xml string.quoted.double.xml"}
+            {value: '"',        scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
+            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [scopes: "text.xml", value: "    /** No closing token… no SVG… no problem…"]
           [
-            {value: "  ",      scopes: "text.xml"}
-            {value: "</",      scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",   scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "  ",       scopes: "text.xml"}
+            {value: "</",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "style",    scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [
-            {value: "</",      scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg", scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "</",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "not-svg",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
         ]
 
@@ -407,25 +407,25 @@ describe "XML grammar", ->
             {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [
-            {value: "    ", scopes: "text.xml meta.svg.xml"}
-            {value: "<",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "    ",  scopes: "text.xml meta.svg.xml"}
+            {value: "<",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "g",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
             {value: "I don't know either.", scopes: "text.xml meta.svg.xml"}
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "g",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [
-            {value: "  ",   scopes: "text.xml meta.svg.xml"}
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "  ",    scopes: "text.xml meta.svg.xml"}
+            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "style", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
           [
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
+            {value: "svg",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
+            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
           ]
         ]
 
