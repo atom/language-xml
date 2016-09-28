@@ -33,3 +33,18 @@ describe "XML grammar", ->
     expect(tokens[3]).toEqual value: '</',  scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
     expect(tokens[4]).toEqual value: 'n',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']
     expect(tokens[5]).toEqual value: '>',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
+    
+  it "tokenizes attribute-name of multi-line tag", ->
+    linesWithIndent = grammar.tokenizeLines """
+      <el
+        attrName="attrValue">
+      </el>
+    """
+    expect(linesWithIndent[1][1]).toEqual value: 'attrName', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
+    
+    linesWithoutIndent = grammar.tokenizeLines """
+      <el
+attrName="attrValue">
+      </el>
+    """
+    expect(linesWithoutIndent[1][0]).toEqual value: 'attrName', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
