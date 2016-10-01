@@ -48,3 +48,38 @@ attrName="attrValue">
       </el>
     """
     expect(linesWithoutIndent[1][0]).toEqual value: 'attrName', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
+
+  it "tokenizes attribute-name.namespace contains period", ->
+    lines = grammar.tokenizeLines """
+      <el name.space:attrName="attrValue">
+      </el>
+    """
+    expect(lines[0][3]).toEqual value: 'name.space', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.namespace.xml']
+
+  it "tokenizes attribute-name.namespace contains East-Asian Kanji", ->
+    lines = grammar.tokenizeLines """
+      <el 名前空間名:attrName="attrValue">
+      </el>
+    """
+    expect(lines[0][3]).toEqual value: '名前空間名', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.namespace.xml']
+
+  it "tokenizes attribute-name.localname contains period", ->
+    lines = grammar.tokenizeLines """
+      <el attr.name="attrValue">
+      </el>
+    """
+    expect(lines[0][3]).toEqual value: 'attr.name', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
+
+  it "tokenizes attribute-name.localname contains colon", ->
+    lines = grammar.tokenizeLines """
+      <el namespace:attr:name="attrValue">
+      </el>
+    """
+    expect(lines[0][5]).toEqual value: 'attr:name', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
+
+  it "tokenizes attribute-name.localname contains East-Asian Kanji", ->
+    lines = grammar.tokenizeLines """
+      <el 属性名="attrValue">
+      </el>
+    """
+    expect(lines[0][3]).toEqual value: '属性名', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
