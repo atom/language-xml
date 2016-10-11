@@ -71,13 +71,13 @@
 'patterns': [
   {
     'name': 'meta.svg.xml'
-    'begin': '(?i:<svg(?=[\\s:>])[^>]*>)'
+    'begin': '<svg(?=[\\s:>])[^>]*>'
     'beginCaptures':
       '0':
         'patterns': [
           'include': '#generic-xml'
         ]
-    'end': '(?i:</svg>)'
+    'end': '</svg>'
     'endCaptures':
       '0':
         'patterns': [
@@ -101,7 +101,7 @@
 ]
 'repository':
   'generic-xml':
-    patterns: [
+    'patterns': [
       {
         'begin': '(<\\?)\\s*([-_a-zA-Z0-9]+)'
         'captures':
@@ -398,7 +398,7 @@
               'include': '#generic-xml'
             ]
         'contentName': 'source.css.embedded.xml'
-        'end': '(?ix:</style>)'
+        'end': '(?i)</style>'
         'endCaptures':
           '0':
             'patterns': [
@@ -435,7 +435,7 @@
               'include': '#generic-xml'
             ]
         'contentName': 'source.js.embedded.xml'
-        'end': '(?ix:</script>)'
+        'end': '(?i)</script>'
         'endCaptures':
           '0':
             'patterns': [
