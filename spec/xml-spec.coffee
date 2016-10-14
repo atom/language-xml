@@ -1,26 +1,3 @@
-buildTokenList = (list) ->
-  result = list.split /\n+/g
-  result.map (line) ->
-    [match, value, scopes] = line.match /^\s*(\S.*?)\x20{2,}(.+)$/
-    scopes = scopes.trim().split /\s+/g
-    {value, scopes}
-
-isString = (input) ->
-  "[object String]" is Object::toString.call input
-
-expandScopes = (input) ->
-  return input unless input
-  if Array.isArray input
-    input.map (i) -> expandScopes i
-  else if isString(input)
-    input.split /\s+/g
-  else if typeof input is "object" and input.scopes?
-    input.scopes = expandScopes input.scopes
-    input
-  else
-    input
-
-
 describe "XML grammar", ->
   grammar = null
 
@@ -44,41 +21,34 @@ describe "XML grammar", ->
       ]>
     """
 
-    scopes = expandScopes "text.xml meta.tag.sgml.doctype.xml meta.internalsubset.xml comment.block.xml punctuation.definition.comment.xml"
-    expect(lines[1][1]).toEqual {value: '<!--', scopes}
-    expect(lines[2][1]).toEqual {value: '<!--', scopes}
-    expect(lines[3][1]).toEqual {value: '<!--', scopes}
+    expect(lines[1][1]).toEqual {value: '<!--', scopes: ['text.xml', 'meta.tag.sgml.doctype.xml', 'meta.internalsubset.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']}
+    expect(lines[2][1]).toEqual {value: '<!--', scopes: ['text.xml', 'meta.tag.sgml.doctype.xml', 'meta.internalsubset.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']}
+    expect(lines[3][1]).toEqual {value: '<!--', scopes: ['text.xml', 'meta.tag.sgml.doctype.xml', 'meta.internalsubset.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']}
 
   it "tokenizes empty element meta.tag.no-content.xml", ->
     {tokens} = grammar.tokenizeLine('<n></n>')
-    expected = buildTokenList """
-      <      text.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-      n      text.xml meta.tag.no-content.xml entity.name.tag.xml entity.name.tag.localname.xml
-      >      text.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-      </     text.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-      n      text.xml meta.tag.no-content.xml entity.name.tag.xml entity.name.tag.localname.xml
-      >      text.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-    """
-    expect(tokens).toEqual expected
+    expect(tokens[0]).toEqual {value: '<', scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+    expect(tokens[1]).toEqual {value: 'n', scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']}
+    expect(tokens[2]).toEqual {value: '>', scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+    expect(tokens[3]).toEqual {value: '</', scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+    expect(tokens[4]).toEqual {value: 'n', scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']}
+    expect(tokens[5]).toEqual {value: '>', scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
 
   describe "SVG handling", ->
     it "recognises SVG tags", ->
       {tokens} = grammar.tokenizeLine "<svg><g></g></svg>"
-      expected = buildTokenList """
-        <      text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml
-        svg    text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml
-        >      text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml
-        <      text.xml meta.svg.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-        g      text.xml meta.svg.xml meta.tag.no-content.xml entity.name.tag.xml entity.name.tag.localname.xml
-        >      text.xml meta.svg.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-        </     text.xml meta.svg.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-        g      text.xml meta.svg.xml meta.tag.no-content.xml entity.name.tag.xml entity.name.tag.localname.xml
-        >      text.xml meta.svg.xml meta.tag.no-content.xml punctuation.definition.tag.xml
-        </     text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml
-        svg    text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml
-        >      text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml
-      """
-      expect(tokens).toEqual expected
+      expect(tokens[0]).toEqual {value: '<', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[1]).toEqual {value: 'svg', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'entity.name.tag.localname.xml']}
+      expect(tokens[2]).toEqual {value: '>', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[3]).toEqual {value: '<', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[4]).toEqual {value: 'g', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']}
+      expect(tokens[5]).toEqual {value: '>', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[6]).toEqual {value: '</', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[7]).toEqual {value: 'g', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']}
+      expect(tokens[8]).toEqual {value: '>', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[9]).toEqual {value: '</', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'punctuation.definition.tag.xml']}
+      expect(tokens[10]).toEqual {value: 'svg', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'entity.name.tag.localname.xml']}
+      expect(tokens[11]).toEqual {value: '>', scopes: ['text.xml', 'meta.svg.xml', 'meta.tag.xml', 'punctuation.definition.tag.xml']}
 
     describe "when <script> tags are found inside SVG", ->
       it "recognises embedded JavaScript", ->
@@ -92,41 +62,30 @@ describe "XML grammar", ->
             </script>
           </svg>
         """
-        jsScopes = "text.xml meta.svg.xml source.js.embedded.xml"
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",     scopes: "text.xml meta.svg.xml"}
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "type",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: '"',      scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "application/javascript", scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml"}
-            {value: '"',      scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [ scopes: jsScopes, value: '    "use strict";']
-          [ scopes: jsScopes, value: '    document.addEventListener("DOMContentLoaded", e => {']
-          [ scopes: jsScopes, value: '      console.log("Ready");']
-          [ scopes: jsScopes, value: '    });']
-          [
-            {value: "  ",     scopes: jsScopes}
-            {value: "</",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: '"', scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "application/javascript", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: '"', scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: '    "use strict";', scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[3][0]).toEqual {value: '    document.addEventListener("DOMContentLoaded", e => {', scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[4][0]).toEqual {value: '      console.log("Ready");', scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[5][0]).toEqual {value: '    });', scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[6][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[6][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[6][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[6][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[7][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[7][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[7][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
       it "doesn't highlight JavaScript in plain XML", ->
         lines = grammar.tokenizeLines """
@@ -138,39 +97,29 @@ describe "XML grammar", ->
             </script>
           </not-svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg", scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",      scopes: "text.xml"}
-            {value: "<",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",       scopes: "text.xml meta.tag.xml"}
-            {value: "type",    scopes: "text.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",       scopes: "text.xml meta.tag.xml"}
-            {value: '"',       scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "application/javascript", scopes: "text.xml meta.tag.xml string.quoted.double.xml"}
-            {value: '"',       scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [scopes: "text.xml", value: "    console.log(function(string){"]
-          [scopes: "text.xml", value: "      return string.toUpperCase();"]
-          [scopes: "text.xml", value: "    }(\"Shouldn't be highlighted\"));"]
-          [
-            {value: "  ",      scopes: "text.xml"}
-            {value: "</",      scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",      scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg", scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "not-svg", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "script", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: '"', scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "application/javascript", scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: '"', scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    console.log(function(string){", scopes: ["text.xml"]}
+        expect(lines[3][0]).toEqual {value: "      return string.toUpperCase();", scopes: ["text.xml"]}
+        expect(lines[4][0]).toEqual {value: "    }(\"Shouldn't be highlighted\"));", scopes: ["text.xml"]}
+        expect(lines[5][0]).toEqual {value: "  ", scopes: ["text.xml"]}
+        expect(lines[5][1]).toEqual {value: "</", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[5][2]).toEqual {value: "script", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[5][3]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[6][0]).toEqual {value: "</", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[6][1]).toEqual {value: "not-svg", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[6][2]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
       it "doesn't highlight JavaScript if <script> tags have unexpected type attributes", ->
         lines = grammar.tokenizeLines """
@@ -180,46 +129,34 @@ describe "XML grammar", ->
             </script>
           </svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",     scopes: "text.xml meta.svg.xml"}
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "type",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "\"",     scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "not/javascript", scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml"}
-            {value: "\"",     scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "    ", scopes: "text.xml meta.svg.xml"}
-            {value: "<",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "\"use strict\";", scopes: "text.xml meta.svg.xml"}
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",   scopes: "text.xml meta.svg.xml"}
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",   scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: "\"", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "not/javascript", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: "\"", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[2][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][2]).toEqual {value: "g", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[2][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][4]).toEqual {value: "\"use strict\";", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[2][5]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][6]).toEqual {value: "g", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[2][7]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
       it "interprets <script> tags without type attributes as JavaScript", ->
         lines = grammar.tokenizeLines """
@@ -229,31 +166,21 @@ describe "XML grammar", ->
             </script>
           </svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml"}
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [ value: "    \"use strict\";", scopes: "text.xml meta.svg.xml source.js.embedded.xml" ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml source.js.embedded.xml"}
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    \"use strict\";", scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
       it "terminates unclosed JavaScript strings before </script>", ->
         lines = grammar.tokenizeLines """
@@ -263,38 +190,26 @@ describe "XML grammar", ->
             </script>
           </svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml"}
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "    ",    scopes: "text.xml meta.svg.xml source.js.embedded.xml"}
-            {value: "\"JS",    scopes: "text.xml meta.svg.xml source.js.embedded.xml"}
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "XML\"",   scopes: "text.xml meta.svg.xml"}
-          ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml"}
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "script",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    ", scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[2][1]).toEqual {value: "\"JS", scopes: ["text.xml", "meta.svg.xml", "source.js.embedded.xml"]}
+        expect(lines[2][2]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][3]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[2][4]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][5]).toEqual {value: "XML\"", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "script", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
 
     describe "when <style> tags are found inside SVG", ->
@@ -306,38 +221,27 @@ describe "XML grammar", ->
             </style>
           </svg>
         """
-        cssScopes = "text.xml meta.svg.xml source.css.embedded.xml"
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",        scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",      scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",        scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",       scopes: "text.xml meta.svg.xml"}
-            {value: "<",        scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",        scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "type",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",        scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: '"',        scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "text/css", scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml"}
-            {value: '"',        scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",        scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [ scopes: cssScopes, value: '    a { color: inherit; }']
-          [
-            {value: "  ",     scopes: cssScopes}
-            {value: "</",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: '"', scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "text/css", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: '"', scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: '    a { color: inherit; }', scopes: ["text.xml", "meta.svg.xml", "source.css.embedded.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml", "source.css.embedded.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
       it "doesn't highlight CSS in plain XML", ->
         lines = grammar.tokenizeLines """
@@ -347,37 +251,27 @@ describe "XML grammar", ->
             </style>
           </not-svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",       scopes: "text.xml"}
-            {value: "<",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",    scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",        scopes: "text.xml meta.tag.xml"}
-            {value: "type",     scopes: "text.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",        scopes: "text.xml meta.tag.xml"}
-            {value: '"',        scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "text/css", scopes: "text.xml meta.tag.xml string.quoted.double.xml"}
-            {value: '"',        scopes: "text.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [scopes: "text.xml", value: "    /** No closing token… no SVG… no problem…"]
-          [
-            {value: "  ",       scopes: "text.xml"}
-            {value: "</",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",    scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",       scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "not-svg",  scopes: "text.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",        scopes: "text.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "not-svg", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "style", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: '"', scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "text/css", scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: '"', scopes: ["text.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    /** No closing token… no SVG… no problem…", scopes: ["text.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "style", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "not-svg", scopes: ["text.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
 
       it "doesn't highlight CSS if <style> tags have unexpected type attributes", ->
@@ -388,46 +282,34 @@ describe "XML grammar", ->
             </style>
           </svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",    scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",     scopes: "text.xml meta.svg.xml"}
-            {value: "<",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",  scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: " ",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "type",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.other.attribute-name.localname.xml"}
-            {value: "=",      scopes: "text.xml meta.svg.xml meta.tag.xml"}
-            {value: "\"",     scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.begin.xml"}
-            {value: "not-css/wtf", scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml"}
-            {value: "\"",     scopes: "text.xml meta.svg.xml meta.tag.xml string.quoted.double.xml punctuation.definition.string.end.xml"}
-            {value: ">",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "    ",  scopes: "text.xml meta.svg.xml"}
-            {value: "<",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "I don't know either.", scopes: "text.xml meta.svg.xml"}
-            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "g",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",    scopes: "text.xml meta.svg.xml"}
-            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style", scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",    scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",     scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: " ", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][4]).toEqual {value: "type", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.other.attribute-name.localname.xml"]}
+        expect(lines[1][5]).toEqual {value: "=", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml"]}
+        expect(lines[1][6]).toEqual {value: "\"", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.begin.xml"]}
+        expect(lines[1][7]).toEqual {value: "not-css/wtf", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml"]}
+        expect(lines[1][8]).toEqual {value: "\"", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "string.quoted.double.xml", "punctuation.definition.string.end.xml"]}
+        expect(lines[1][9]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[2][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][2]).toEqual {value: "g", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[2][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][4]).toEqual {value: "I don't know either.", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[2][5]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][6]).toEqual {value: "g", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[2][7]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
 
       it "interprets <style> tags without type attributes as CSS", ->
@@ -438,31 +320,21 @@ describe "XML grammar", ->
             </style>
           </svg>
         """
-        expect(lines).toEqual expandScopes [
-          [
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml"}
-            {value: "<",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [ value: "    @media screen {}", scopes: "text.xml meta.svg.xml source.css.embedded.xml" ]
-          [
-            {value: "  ",      scopes: "text.xml meta.svg.xml source.css.embedded.xml"}
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "style",   scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-          [
-            {value: "</",      scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-            {value: "svg",     scopes: "text.xml meta.svg.xml meta.tag.xml entity.name.tag.localname.xml"}
-            {value: ">",       scopes: "text.xml meta.svg.xml meta.tag.xml punctuation.definition.tag.xml"}
-          ]
-        ]
+        expect(lines[0][0]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[0][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[0][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml"]}
+        expect(lines[1][1]).toEqual {value: "<", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[1][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[1][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[2][0]).toEqual {value: "    @media screen {}", scopes: ["text.xml", "meta.svg.xml", "source.css.embedded.xml"]}
+        expect(lines[3][0]).toEqual {value: "  ", scopes: ["text.xml", "meta.svg.xml", "source.css.embedded.xml"]}
+        expect(lines[3][1]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[3][2]).toEqual {value: "style", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[3][3]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][0]).toEqual {value: "</", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
+        expect(lines[4][1]).toEqual {value: "svg", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "entity.name.tag.localname.xml"]}
+        expect(lines[4][2]).toEqual {value: ">", scopes: ["text.xml", "meta.svg.xml", "meta.tag.xml", "punctuation.definition.tag.xml"]}
 
   it "tokenizes attribute-name of multi-line tag", ->
     linesWithIndent = grammar.tokenizeLines """
