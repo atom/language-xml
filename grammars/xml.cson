@@ -43,6 +43,7 @@
   'rdf'
   'rng'
   'rss'
+  'sdf'
   'shproj'
   'storyboard'
   'svg'
@@ -67,7 +68,6 @@
   'xsd'
   'xul'
   'ui'
-  'sdf'
 ]
 'patterns': [
   {
