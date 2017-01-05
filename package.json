@@ -1,6 +1,6 @@
 {
   "name": "language-xml",
-  "version": "0.34.13",
+  "version": "0.34.14",
   "description": "XML language support in Atom",
   "engines": {
     "atom": "*",
