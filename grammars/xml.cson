@@ -76,6 +76,40 @@
   'xul'
   'ui'
 ]
+'firstLineMatch': '''(?x)
+  ^ <\\? xml
+
+  # VersionInfo
+  \\s+ version
+  \\s* = \\s*
+  ([\'"])
+    1 \\. [0-9]+
+  \\1
+
+  # EncodingDecl
+  (?:
+    \\s+ encoding
+    \\s* = \\s*
+
+    # EncName
+    ([\'"])
+      [A-Za-z]
+      [-A-Za-z0-9._]*
+    \\2
+  )?
+
+  # SDDecl
+  (?:
+    \\s+ standalone
+    \\s* = \\s*
+    ([\'"])
+      (?:yes|no)
+    \\3
+  )?
+
+  \\s*
+  \\?>
+'''
 'patterns': [
   {
     'begin': '(<\\?)\\s*([-_a-zA-Z0-9]+)'
