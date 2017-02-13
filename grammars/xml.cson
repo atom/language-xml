@@ -20,6 +20,7 @@
   'fodt'
   'fsproj'
   'fxml'
+  'gir'
   'glade'
   'gpx'
   'graphml'
@@ -45,6 +46,7 @@
   'rss'
   'sdf'
   'shproj'
+  'sld'
   'storyboard'
   'svg'
   'targets'
@@ -57,7 +59,12 @@
   'vcproj.filters'
   'vcxproj'
   'vcxproj.filters'
+  'wixmsp'
+  'wixmst'
+  'wixobj'
+  'wixout'
   'wsdl'
+  'wxs'
   'xaml'
   'xbl'
   'xib'
@@ -69,6 +76,55 @@
   'xul'
   'ui'
 ]
+'firstLineMatch': '''(?x)
+  # XML declaration
+  (?:
+    ^ <\\? xml
+
+    # VersionInfo
+    \\s+ version
+    \\s* = \\s*
+    ([\'"])
+      1 \\. [0-9]+
+    \\1
+
+    # EncodingDecl
+    (?:
+      \\s+ encoding
+      \\s* = \\s*
+
+      # EncName
+      ([\'"])
+        [A-Za-z]
+        [-A-Za-z0-9._]*
+      \\2
+    )?
+
+    # SDDecl
+    (?:
+      \\s+ standalone
+      \\s* = \\s*
+      ([\'"])
+        (?:yes|no)
+      \\3
+    )?
+
+    \\s* \\?>
+  )
+  |
+  # Modeline
+  (?i:
+    # Emacs
+    -\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
+      xml
+    (?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
+    |
+    # Vim
+    (?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s*set?\\s))(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:](?:filetype|ft|syntax)\\s*=
+      xml
+    (?=\\s|:|$)
+  )
+'''
 'patterns': [
   {
     'name': 'meta.svg.xml'
