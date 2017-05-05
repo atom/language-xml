@@ -1,6 +1,7 @@
 'scopeName': 'text.xml'
 'name': 'XML'
 'fileTypes': [
+  'aiml'
   'atom'
   'axml'
   'bpmn'
@@ -47,6 +48,7 @@
   'rss'
   'sdf'
   'shproj'
+  'siml'
   'sld'
   'storyboard'
   'svg'
