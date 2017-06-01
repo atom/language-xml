@@ -33,7 +33,7 @@ describe "XML grammar", ->
     expect(tokens[3]).toEqual value: '</',  scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
     expect(tokens[4]).toEqual value: 'n',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']
     expect(tokens[5]).toEqual value: '>',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
-    
+
   it "tokenizes attribute-name of multi-line tag", ->
     linesWithIndent = grammar.tokenizeLines """
       <el
@@ -83,6 +83,13 @@ attrName="attrValue">
       </el>
     """
     expect(lines[0][3]).toEqual value: '属性名', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
+
+  it "tokenizes attribute-name.localname when followed by spaces", ->
+    lines = grammar.tokenizeLines """
+      <el attrName     ="attrValue">
+      </el>
+    """
+    expect(lines[0][3]).toEqual value: 'attrName', scopes: ['text.xml', 'meta.tag.xml', 'entity.other.attribute-name.localname.xml']
 
   describe "firstLineMatch", ->
     it "recognises Emacs modelines", ->

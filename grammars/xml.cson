@@ -387,7 +387,7 @@
             'name': 'punctuation.separator.namespace.xml'
           '4':
             'name': 'entity.other.attribute-name.localname.xml'
-        'match': '(?:^|\\s+)(?:([-\\w.]+)((:)))?([-\\w.:]+)='
+        'match': '(?:^|\\s+)(?:([-\\w.]+)((:)))?([-\\w.:]+)\\s*='
       }
       {
         'include': '#doublequotedString'
