@@ -403,3 +403,9 @@
         'name': 'punctuation.definition.comment.xml'
     'end': '--%?>'
     'name': 'comment.block.xml'
+    'patterns': [
+      {
+        'match': '-{3,}>'
+        'name': 'invalid.illegal.bad-comments-or-CDATA.xml'
+      }
+    ]
