@@ -405,7 +405,7 @@
     'name': 'comment.block.xml'
     'patterns': [
       {
-        'match': '-{3,}>'
+        'match': '(?<!<[!%])--(?!>)'
         'name': 'invalid.illegal.bad-comments-or-CDATA.xml'
       }
     ]
