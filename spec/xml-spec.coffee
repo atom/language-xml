@@ -25,7 +25,7 @@ describe "XML grammar", ->
     expect(lines[2][1]).toEqual value: '<!--', scopes: ['text.xml', 'meta.tag.sgml.doctype.xml', 'meta.internalsubset.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(lines[3][1]).toEqual value: '<!--', scopes: ['text.xml', 'meta.tag.sgml.doctype.xml', 'meta.internalsubset.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
 
-   it 'tokenizes comment endings with more than two dashes as invalid', ->
+  it 'tokenizes comment endings with more than two dashes as invalid', ->
     {tokens} = grammar.tokenizeLine('<!-- invalid comment --->')
     expect(tokens[0]).toEqual value: '<!--', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(tokens[1]).toEqual value: ' invalid comment ', scopes: ['text.xml', 'comment.block.xml']
