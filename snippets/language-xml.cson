@@ -8,6 +8,9 @@
   'Long Attribute Tag':
     'prefix': '<a'
     'body': '<${1:name} ${2:attr}="${3:value}">$4\n</${1:name}>'
+  'Long tag w/ Body':
+    'prefix': '<b'
+    'body': '<${1:name}>\n\t$2\n</${1:name}>$3'
   'Long Tag':
     'prefix': '<'
     'body': '<${1:name}>$2</${1:name}>'
