@@ -36,7 +36,8 @@ describe "XML grammar", ->
     expect(tokens[0]).toEqual value: '<!--', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(tokens[1]).toEqual value: ' invalid ', scopes: ['text.xml', 'comment.block.xml']
     expect(tokens[2]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
-    expect(tokens[3]).toEqual value: ' comment -->', scopes: ['text.xml', 'comment.block.xml']
+    expect(tokens[3]).toEqual value: ' comment ', scopes: ['text.xml', 'comment.block.xml']
+    expect(tokens[4]).toEqual value: '-->', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
 
   it "tokenizes empty element meta.tag.no-content.xml", ->
     {tokens} = grammar.tokenizeLine('<n></n>')
