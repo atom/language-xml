@@ -30,14 +30,31 @@ describe "XML grammar", ->
     expect(tokens[0]).toEqual value: '<!--', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(tokens[1]).toEqual value: ' invalid comment ', scopes: ['text.xml', 'comment.block.xml']
     expect(tokens[2]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
+    expect(tokens[3]).toEqual value: '->', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
 
   it 'tokenizes comments with two dashes not followed by ">" as invalid', ->
     {tokens} = grammar.tokenizeLine('<!-- invalid -- comment -->')
     expect(tokens[0]).toEqual value: '<!--', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(tokens[1]).toEqual value: ' invalid ', scopes: ['text.xml', 'comment.block.xml']
     expect(tokens[2]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
-    expect(tokens[3]).toEqual value: ' comment ', scopes: ['text.xml', 'comment.block.xml']
+    expect(tokens[3]).toEqual value: ' comment ', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
     expect(tokens[4]).toEqual value: '-->', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
+
+  it 'tokenizes after invalid comment only if comment was properly closed', ->
+    {tokens} = grammar.tokenizeLine('<!-- invalid -- comment ---><n></n>--><n></n>')
+    expect(tokens[0]).toEqual value: '<!--', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
+    expect(tokens[1]).toEqual value: ' invalid ', scopes: ['text.xml', 'comment.block.xml']
+    expect(tokens[2]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
+    expect(tokens[3]).toEqual value: ' comment ', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
+    expect(tokens[4]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
+    expect(tokens[5]).toEqual value: '-><n></n>', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
+    expect(tokens[6]).toEqual value: '-->', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
+    expect(tokens[7]).toEqual value: '<',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
+    expect(tokens[8]).toEqual value: 'n',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']
+    expect(tokens[9]).toEqual value: '>',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
+    expect(tokens[10]).toEqual value: '</', scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
+    expect(tokens[11]).toEqual value: 'n',  scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']
+    expect(tokens[12]).toEqual value: '>',  scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
 
   it "tokenizes empty element meta.tag.no-content.xml", ->
     {tokens} = grammar.tokenizeLine('<n></n>')
