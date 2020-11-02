@@ -47,7 +47,7 @@ describe "XML grammar", ->
     expect(tokens[2]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
     expect(tokens[3]).toEqual value: ' comment -', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
     expect(tokens[4]).toEqual value: '--', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
-    expect(tokens[5]).toEqual value: '><n></n>', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
+    expect(tokens[5]).toEqual value: '><n></n>', scopes: ['text.xml', 'comment.block.xml', 'invalid.illegal.bad-comments-or-CDATA.xml']
     expect(tokens[6]).toEqual value: '-->', scopes: ['text.xml', 'comment.block.xml', 'punctuation.definition.comment.xml']
     expect(tokens[7]).toEqual value: '<',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'punctuation.definition.tag.xml']
     expect(tokens[8]).toEqual value: 'n',   scopes: ['text.xml', 'meta.tag.no-content.xml', 'entity.name.tag.xml', 'entity.name.tag.localname.xml']
