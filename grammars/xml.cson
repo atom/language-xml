@@ -418,7 +418,7 @@
         'name': 'comment.block.xml'
         'patterns': [
           {
-            'begin': '--(?!>)'
+            'begin': '(?=--(?!>))'
             'end': '(?<!-)(?=-->)'
             'name': 'invalid.illegal.bad-comments-or-CDATA.xml'
           }
