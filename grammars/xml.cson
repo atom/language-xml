@@ -30,7 +30,7 @@
   'isml'
   'jmx'
   'jsp'
-  'kml'  
+  'kml'
   'kst'
   'launch'
   'menu'
@@ -406,8 +406,8 @@
         'captures':
           '0':
             'name': 'punctuation.definition.comment.xml'
-          'end': '--%>'
-          'name': 'comment.block.xml'
+        'end': '--%>'
+        'name': 'comment.block.xml'
       }
       {
         'begin': '<!--'
