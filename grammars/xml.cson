@@ -402,14 +402,6 @@
   'comments':
     'patterns': [
       {
-        'begin': '<%--'
-        'captures':
-          '0':
-            'name': 'punctuation.definition.comment.xml'
-          'end': '--%>'
-          'name': 'comment.block.xml'
-      }
-      {
         'begin': '<!--'
         'captures':
           '0':
