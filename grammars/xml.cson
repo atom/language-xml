@@ -406,8 +406,8 @@
         'captures':
           '0':
             'name': 'punctuation.definition.comment.xml'
-          'end': '--%>'
-          'name': 'comment.block.xml'
+        'end': '--%>'
+        'name': 'comment.block.xml'
       }
       {
         'begin': '<!--'
@@ -418,10 +418,9 @@
         'name': 'comment.block.xml'
         'patterns': [
           {
-            'begin': '--(?!>)'
-            'captures':
-              '0':
-                'name': 'invalid.illegal.bad-comments-or-CDATA.xml'
+            'begin': '(?=--(?!>))'
+            'end': '(?<!-)(?=-->)'
+            'name': 'invalid.illegal.bad-comments-or-CDATA.xml'
           }
         ]
       }
